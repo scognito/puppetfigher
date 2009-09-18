@@ -109,12 +109,12 @@ void LevelScreen::DrawBackground()
    layer0_a.Draw();
    layer0_b.Draw();
    
-   layer1_a.Draw();
-   layer1_b.Draw();
+   //layer1_a.Draw();
+   //layer1_b.Draw();
 }
 
 void LevelScreen::DrawForeground()
 {
-   layer2_a.Draw();
-   layer2_b.Draw();
+   //layer2_a.Draw();
+   //layer2_b.Draw();
 }
