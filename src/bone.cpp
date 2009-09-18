@@ -177,14 +177,20 @@ void Bone::Draw(float x_offset, float y_offset){
 		
 		_boneSprite.SetPosition((_x + _jointx)/2.0 - _boneSprite.GetWidth()/2 + _skinDx, (_y + _jointy)/2.0 - _boneSprite.GetHeight()/2 + _skinDy);
 		
+		float angle_bump = 0;
+		if(type != Armor::Category::TORSO && type != Armor::Category::HEAD)
+			angle_bump = 90;
+		
 		if(!_flip)
 		{
-			_boneSprite.SetRotation((_absAngle)/2.0 + _skinDangle/2.0);
+			_boneSprite.SetRotation((_absAngle)/2.0 + _skinDangle/2.0 + angle_bump);
 		}
 		else
 		{
-			_boneSprite.SetRotation(-1*((_absAngle)/2.0) + -1*_skinDangle/2.0);
+			_boneSprite.SetRotation(-1*((_absAngle)/2.0) + -1*_skinDangle/2.0 + angle_bump);
 		}
+
+
 		_boneSprite.Draw(x_offset, y_offset);
 	}
 	

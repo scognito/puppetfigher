@@ -189,7 +189,7 @@ int main(int argc, char **argv){
 	float dx = 0;
 	
     int i = 0;
-	int FRAME_TICK = 6;
+	int FRAME_TICK = 30;
 
 	//playerSkeleton->Print();
 	
