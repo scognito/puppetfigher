@@ -1,0 +1,57 @@
+Overview:
+--------------------------------
+GSA [General Skeleton Animation] is a custom format used by galaxy stations for loading skeletons and their associated set of animations.
+
+It is described in detail below.
+
+File Format:
+-------------------------------
+skeleton
+<Int::Number of Bones>
+<Int::Bone Id> <Int::Parent Bone Id (-1 for ROOT)> <Float::Rotation> <Float::Length>
+animation
+idle <Int::Animation Id> <Int::Num Frames>
+<Float::Frame X> <Float::Frame Y> <Int::Num Bones>
+<Int::Bone Id> <Float::Angle>
+animation
+<String::Animation Name> <Int::Animation Id> <Int::Num Frames>
+<Float::Frame X> <Float::Frame Y> <Int::Num Bones>
+<Int::Bone Id> <Float::Angle>
+\n
+
+Notes:
+--------------------------
+Every Skeleton must have at least 1 animation (named idle) that describes the resting position.
+
+You can have any number of animations beyond that.
+
+You MUST have a new line at the end of the file to tell the parser "Hey dumb-shit, stop reading!"
+
+Example File:
+--------------------------
+skeleton
+3
+0 -1 45.0 30.0
+1 0 30.0 15.0
+2 1 15.0 20.0
+animation
+idle 0 1
+100.0 110.0 3
+0 34.0
+1 25.0
+2 16.0
+animation
+walking 0 3
+100.1 105.0 3
+0 25.0
+1 36.0
+2 36.0 
+100.1 105.0 3
+0 25.0
+1 136.0
+2 36.0
+100.1 105.0 3
+0 -25.0
+1 36.0
+2 26.0
+
