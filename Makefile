@@ -19,7 +19,7 @@ TARGET		:=	boot
 BUILD		:=	build
 SOURCES		:=	src
 DATA		:=	images images/simple_suit gsa
-INCLUDES	:=	
+INCLUDES	:=	include
 
 #---------------------------------------------------------------------------------
 # options for code generation

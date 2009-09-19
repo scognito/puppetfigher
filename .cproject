@@ -22,12 +22,33 @@
 <builder id="org.eclipse.cdt.build.core.settings.default.builder.1352618550" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="org.eclipse.cdt.build.core.settings.default.builder"/>
 <tool id="org.eclipse.cdt.build.core.settings.holder.libs.383042970" name="holder for library settings" superClass="org.eclipse.cdt.build.core.settings.holder.libs"/>
 <tool id="org.eclipse.cdt.build.core.settings.holder.1749232514" name="Assembly" superClass="org.eclipse.cdt.build.core.settings.holder">
+<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.1905943316" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
+<listOptionValue builtIn="false" value="../{DEVKITPRO}/libogc/include"/>
+<listOptionValue builtIn="false" value="&quot;${DEVKITPPC}/lib/gcc/powerpc-gekko/4.2.4/include&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${DEVKITPPC}/powerpc-gekko/include&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${DEVKITPPC}/powerpc-gekko/include/c++/4.2.4&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${DEVKITPPC}/powerpc-gekko/include/c++/4.2.4/powerpc-gekko&quot;"/>
+</option>
 <inputType id="org.eclipse.cdt.build.core.settings.holder.inType.1249902058" languageId="org.eclipse.cdt.core.assembly" languageName="Assembly" sourceContentType="org.eclipse.cdt.core.asmSource" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 </tool>
 <tool id="org.eclipse.cdt.build.core.settings.holder.894995720" name="GNU C++" superClass="org.eclipse.cdt.build.core.settings.holder">
+<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.276039827" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
+<listOptionValue builtIn="false" value="&quot;${DEVKITPRO}/libogc/include&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${DEVKITPPC}/lib/gcc/powerpc-gekko/4.2.4/include&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${DEVKITPPC}/powerpc-gekko/include&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${DEVKITPPC}/powerpc-gekko/include/c++/4.2.4&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${DEVKITPPC}/powerpc-gekko/include/c++/4.2.4/powerpc-gekko&quot;"/>
+</option>
 <inputType id="org.eclipse.cdt.build.core.settings.holder.inType.102478524" languageId="org.eclipse.cdt.core.g++" languageName="GNU C++" sourceContentType="org.eclipse.cdt.core.cxxSource,org.eclipse.cdt.core.cxxHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 </tool>
 <tool id="org.eclipse.cdt.build.core.settings.holder.1020858217" name="GNU C" superClass="org.eclipse.cdt.build.core.settings.holder">
+<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.1703576758" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
+<listOptionValue builtIn="false" value="../{DEVKITPRO}/libogc/include"/>
+<listOptionValue builtIn="false" value="&quot;${DEVKITPPC}/lib/gcc/powerpc-gekko/4.2.4/include&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${DEVKITPPC}/powerpc-gekko/include&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${DEVKITPPC}/powerpc-gekko/include/c++/4.2.4&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${DEVKITPPC}/powerpc-gekko/include/c++/4.2.4/powerpc-gekko&quot;"/>
+</option>
 <inputType id="org.eclipse.cdt.build.core.settings.holder.inType.331381030" languageId="org.eclipse.cdt.core.gcc" languageName="GNU C" sourceContentType="org.eclipse.cdt.core.cSource,org.eclipse.cdt.core.cHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 </tool>
 </toolChain>
@@ -201,6 +222,36 @@
 </scannerConfigBuildInfo>
 </storageModule>
 <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
+<buildTargets>
+<target name="build" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+<buildCommand>make</buildCommand>
+<buildArguments/>
+<buildTarget/>
+<stopOnError>true</stopOnError>
+<useDefaultCommand>true</useDefaultCommand>
+<runAllBuilders>false</runAllBuilders>
+</target>
+<target name="clean" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+<buildCommand>make</buildCommand>
+<buildArguments/>
+<buildTarget>clean</buildTarget>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>true</useDefaultCommand>
+<runAllBuilders>false</runAllBuilders>
+</target>
+<target name="wiiload" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+<buildCommand>make</buildCommand>
+<buildArguments/>
+<buildTarget>run</buildTarget>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>true</useDefaultCommand>
+<runAllBuilders>false</runAllBuilders>
+</target>
+</buildTargets>
+</storageModule>
 </cconfiguration>
 </storageModule>
 <storageModule moduleId="cdtBuildSystem" version="4.0.0">
