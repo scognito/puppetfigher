@@ -15,6 +15,7 @@ using namespace wsp;
 
 #define MAX_WIISPRITE_LAYERS 100
 
+#include "beardface.h"
 #include "warrior.h"
 #include "bullet.h"
 #include "entity.h"
@@ -184,7 +185,7 @@ int main(int argc, char **argv){
 	
 	levelScreen = new LevelScreen(layer0_img, layer1_img, layer2_img);
 	
-	players.push_back(new Warrior(250, 0, world));
+	players.push_back(new Beardface(250, 0, world));
 	players[0]->MovePlayer(-50, 0, true);
 	players.push_back(new Warrior(350,0, world));
 	players[1]->MovePlayer(100, 0, true);
