@@ -245,6 +245,8 @@ int main(int argc, char **argv){
 	int CROUCH_ANIMATION = 4;
 	int SIT_ANIMATION = 5;
 	int CRAWL_ANIMATION = 6;
+	int CROUCH_PUNCH_ANIMATION = 7;
+	int CROUCH_KICK_ANIMATION = 8;
 	
 	for(;;){
 	
@@ -304,7 +306,10 @@ int main(int argc, char **argv){
 				
 				anim_set = true;
 			}
-			
+			else
+			{
+				moving[current_player] = false;
+			}
 			if(WPAD_ButtonsHeld(current_player)&WPAD_BUTTON_UP || PAD_ButtonsHeld(current_player)&PAD_BUTTON_UP)
 			{
 				players[current_player]->Jump();
@@ -312,12 +317,27 @@ int main(int argc, char **argv){
 			
 			if(WPAD_ButtonsDown(current_player)&WPAD_BUTTON_A || PAD_ButtonsDown(current_player)&PAD_BUTTON_A)
 			{
-				players[current_player]->SetCurrentAnimation(KICK_ANIMATION,IDLE_ANIMATION);
+				if(!sitting[current_player])
+				{
+					players[current_player]->SetCurrentAnimation(KICK_ANIMATION, SIT_ANIMATION);
+				}
+				else
+				{
+					players[current_player]->SetCurrentAnimation(CROUCH_KICK_ANIMATION,IDLE_ANIMATION);
+				}
 				anim_set = true;
 			}
 			else if(WPAD_ButtonsDown(current_player)&WPAD_BUTTON_B || PAD_ButtonsDown(current_player)&PAD_BUTTON_B)
 			{
-				players[current_player]->SetCurrentAnimation(PUNCH_ANIMATION,IDLE_ANIMATION);
+				if(!sitting[current_player])
+				{
+					players[current_player]->SetCurrentAnimation(PUNCH_ANIMATION, SIT_ANIMATION);
+				}
+				else
+				{
+					players[current_player]->SetCurrentAnimation(CROUCH_PUNCH_ANIMATION,IDLE_ANIMATION);
+				}
+					
 				anim_set = true;
 			}
 			
