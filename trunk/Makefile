@@ -17,9 +17,9 @@ include $(DEVKITPPC)/wii_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	boot
 BUILD		:=	build
-SOURCES		:=	src
-DATA		:=	images images/simple_suit gsa
-INCLUDES	:=	include
+SOURCES		:=	src src/players
+DATA		:=	images images/simple_suit gsa images/players/beardface
+INCLUDES	:=	include include/players
 
 #---------------------------------------------------------------------------------
 # options for code generation
