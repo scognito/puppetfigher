@@ -40,6 +40,8 @@ Skeleton::Skeleton(float x, float y, const char* skelFilePath)
 	
 	_rotation = 0;
 	_flip = false;
+	
+	_SingleAnimation = false;
 }
 
 Skeleton::~Skeleton()
@@ -280,7 +282,11 @@ int Skeleton::GetAnimationIdByName(const char* name)
 }
 
 void Skeleton::SetCurrentAnimation(int anim_id){
+	if(_SingleAnimation)
+		return;
+
 	_CurrentAnimation = anim_id;
+	_SingleAnimation  = false;
 	
 	if(_CurrentAnimation < 0) _CurrentAnimation = (int)_Animations.size() - 1;
 	
@@ -289,6 +295,23 @@ void Skeleton::SetCurrentAnimation(int anim_id){
 	//Reset Animation Frame
 	_animationFrame = 0;
 }
+
+void Skeleton::SetCurrentAnimation(int anim_id, int nextAnimation){
+	if(_SingleAnimation)
+		return;
+		
+	_CurrentAnimation = anim_id;
+	_NextAnimation    = nextAnimation;
+	_SingleAnimation  = true;
+	
+	if(_CurrentAnimation < 0) _CurrentAnimation = (int)_Animations.size() - 1;
+	
+	if(_CurrentAnimation >= (int)_Animations.size()) _CurrentAnimation = 0;
+	
+	//Reset Animation Frame
+	_animationFrame = 0;
+}
+
 
 float Skeleton::CircleDistance (float rot1, float rot2){ //Finds the distance from rot1 to rot2
 	float pt1 = rot1;
@@ -376,6 +399,11 @@ void Skeleton::StepAnimation(float step_size, float current_step){
 		if(step_size == current_step)
 			_animationFrame++;
 		
+	if(_animationFrame >= _Animations[_CurrentAnimation].frame_count && _SingleAnimation)
+	{
+		_SingleAnimation = false;
+		SetCurrentAnimation(_NextAnimation);
+	}
 }	
 
 //Text debug print

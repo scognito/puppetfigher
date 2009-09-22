@@ -27,7 +27,7 @@ extern u8 layer0_png[];
 extern u8 layer1_png[];
 extern u8 layer2_png[];
 
-Warrior* player = NULL;
+std::vector<Player*> players;
 
 b2World *world = 0;
 
@@ -82,27 +82,27 @@ void SetupWorld(void)
 	block_quad.SetFillColor(color);
 	
 	
-	b2BodyDef bodyDef;
+	//b2BodyDef bodyDef;
 	
-	bodyDef.position.Set((block_rect.x + block_rect.width/2) / CommonTypes::PIXELS_PER_UNIT, (block_rect.y - block_rect.height)  / CommonTypes::PIXELS_PER_UNIT);
+	//bodyDef.position.Set((block_rect.x + block_rect.width/2) / CommonTypes::PIXELS_PER_UNIT, (block_rect.y - block_rect.height)  / CommonTypes::PIXELS_PER_UNIT);
 		
-	bodyDef.angle = 0;
-	block = world->CreateBody(&bodyDef);
+	//bodyDef.angle = 0;
+	//block = world->CreateBody(&bodyDef);
 	
-	b2PolygonDef polydef;
-	polydef.SetAsBox(((block_rect.width/CommonTypes::PIXELS_PER_UNIT)/2.0), ((block_rect.height/CommonTypes::PIXELS_PER_UNIT)/2.0));
+	//b2PolygonDef polydef;
+	//polydef.SetAsBox(((block_rect.width/CommonTypes::PIXELS_PER_UNIT)/2.0), ((block_rect.height/CommonTypes::PIXELS_PER_UNIT)/2.0));
 	
-  	polydef.density = 0.0; //fixed
+  	//polydef.density = 0.0; //fixed
 		
-	polydef.friction = CommonTypes::DEFAULT_FRICTION;
-	polydef.restitution = CommonTypes::DEFAULT_RESTITUTION;
+	//polydef.friction = CommonTypes::DEFAULT_FRICTION;
+	//polydef.restitution = CommonTypes::DEFAULT_RESTITUTION;
 	
-	block->CreateShape(&polydef);	
+	//block->CreateShape(&polydef);	
 	
-	block->SetMassFromShapes();
+	//block->SetMassFromShapes();
 	
 	//block_rect.height = 10;
-	block_quad.SetRectangle(&block_rect);
+	//block_quad.SetRectangle(&block_rect);
 }
 
 void makeWorld(void)
@@ -116,14 +116,14 @@ void makeWorld(void)
 	world = new b2World(worldAABB, gravity, doSleep);
 	
 	b2BodyDef groundBodyDef;
-	groundBodyDef.position.Set(-1.0f, -1.0f);
+	groundBodyDef.position.Set(0.0f, -1.0f);
 	b2Body* groundBody = world->CreateBody(&groundBodyDef);
 	
 	// Get Screen Resolution
 	// It turns out this is tricky because in a TV you never know your effective resolution and origin
 	// So, I'm using works-for-me heuristics
 	GXRModeObj *rmode = VIDEO_GetPreferredMode(NULL);
-	screen_width = (int)((float)rmode->viWidth * 1.9f); 
+	screen_width = (int)((float)rmode->viWidth * 1.0f); 
 	screen_height = (int)((float)rmode->viHeight * 0.9f);
 	float32 width = (float)screen_width / CommonTypes::PIXELS_PER_UNIT;
 	float32 height = (float)screen_height / CommonTypes::PIXELS_PER_UNIT;
@@ -141,12 +141,12 @@ void makeWorld(void)
 
 void AddEntity()
 {
-    float x = rand()%20-10;
-	float y = rand()%20-10;
+    //float x = rand()%20-10;
+	//float y = rand()%20-10;
 
-	Wasp* e = new Wasp(200+x, 40+y, enemy_img);
+	//Wasp* e = new Wasp(200+x, 40+y, enemy_img);
     //
-	enemies.push_back(e);
+	//enemies.push_back(e);
 }
 
 void AddPlayer()
@@ -184,21 +184,29 @@ int main(int argc, char **argv){
 	
 	levelScreen = new LevelScreen(layer0_img, layer1_img, layer2_img);
 	
-	player = new Warrior(300,300, world);
+	players.push_back(new Warrior(250, 0, world));
+	players[0]->MovePlayer(-50, 0, true);
+	players.push_back(new Warrior(350,0, world));
+	players[1]->MovePlayer(100, 0, true);
 	
-	float dx = 0;
+	std::vector<float> dx;
+	std::vector<int>  direction_x;
+	std::vector<int>  direction_y;
+	std::vector<bool>  anim_override;
+	std::vector<bool>  flip_animation;
+	
+	for(unsigned int np = 0; np < players.size(); np++)
+	{
+		dx.push_back(0);
+		direction_x.push_back(1);
+		direction_y.push_back(0);
+		flip_animation.push_back(false);
+		anim_override.push_back(false);
+	}
 	
     int i = 0;
-	int FRAME_TICK = 30;
+	int FRAME_TICK = 25;
 
-	//playerSkeleton->Print();
-	
-	int direction_x = 1;
-	int direction_y = 0;
-	
-//	int flip_frame = 0;
-	bool anim_override = false;
-	bool flip_animation = false;
 	int aim_count = 0;
 	
 	float _spawnTimer = 0;
@@ -220,10 +228,11 @@ int main(int argc, char **argv){
 	//Add remote entity for test
 	AddEntity();
 	
-	//Add a remote player for test
-	AddPlayer();
 	
-	float shiftx = 0;
+	int IDLE_ANIMATION = 0;
+	int RUN_ANIMATION  = 1;
+	int KICK_ANIMATION = 2;
+	int PUNCH_ANIMATION = 3;
 	
 	for(;;){
 	
@@ -231,187 +240,83 @@ int main(int argc, char **argv){
 	
 		WPAD_ScanPads();
 		PAD_ScanPads();
-		if(WPAD_ButtonsDown(WPAD_CHAN_0)&WPAD_BUTTON_HOME)
-			break;
-			
-		if(WPAD_ButtonsHeld(WPAD_CHAN_0)&WPAD_BUTTON_RIGHT || PAD_ButtonsHeld(0)&PAD_BUTTON_RIGHT)
-		{
-		
-			dx += 0.1;
-			if(dx > 1.5) dx = 1.5;
-			direction_x = 1;
-			direction_y = 0;
-			anim_override = false;
-			flip_animation = false;
-			levelScreen->ScrollRight(2.0);
-			player->MovePlayer(dx,0);
-			shiftx-=2.0;
-		}
-		
-		if(WPAD_ButtonsHeld(WPAD_CHAN_0)&WPAD_BUTTON_LEFT || PAD_ButtonsHeld(0)&PAD_BUTTON_LEFT)
-		{
-			dx -= 0.1;
-			if(abs(dx) > 1.5) dx = -1.5;
-			direction_x = -1;
-			direction_y = 0;
-			anim_override = false;
-			flip_animation = true;
-			levelScreen->ScrollLeft(2.0);
-			player->MovePlayer(dx,0);
-			shiftx+=2.0;
-		}
-		
-		if(WPAD_ButtonsHeld(WPAD_CHAN_0)&WPAD_BUTTON_UP || PAD_ButtonsHeld(0)&PAD_BUTTON_UP)
-		{
-			direction_y = -1;
-			anim_override = false;
-		}
-		else
-		{
-			direction_y = 0;
-		}
-		
-		if(WPAD_ButtonsDown(WPAD_CHAN_0)&WPAD_BUTTON_A || PAD_ButtonsDown(0)&PAD_BUTTON_A)
-		{
-			player->Jump();
-		}
-		
-		if(WPAD_ButtonsDown(WPAD_CHAN_0)&WPAD_BUTTON_B || PAD_ButtonsDown(0)&PAD_BUTTON_B)
-		{
-		    //Fire
-			//TODO Care about pointer location?
-			
-			b2Vec2 tDirection(direction_x,direction_y);
-			
-			if(direction_x == 0 &&direction_y == 0)
-			{
-				if(flip_animation) tDirection.x = -1;
-				else tDirection.x = 1;
-			}
-			
-			//tDirection.Normalize();
-			Bullet* tBullet = player->FireWeapon(tDirection);
-			
-			aim_count = 20;
-			
-			if(tBullet != NULL)
-			{
-			   bullets.push_back(tBullet);
-			}
-		}
-		
-		
-		if(WPAD_ButtonsDown(WPAD_CHAN_0)&WPAD_BUTTON_PLUS || PAD_ButtonsDown(0)&PAD_TRIGGER_R)
-		{
-			anim_override = true;
-			player->SetCurrentAnimation(player->GetCurrentAnimation()+1);
-		}
-		
-		if(WPAD_ButtonsDown(WPAD_CHAN_0)&WPAD_BUTTON_MINUS|| PAD_ButtonsDown(0)&PAD_TRIGGER_L)
-		{
-			anim_override = true;
-			player->SetCurrentAnimation(player->GetCurrentAnimation()-1);
-		}
-		
-		if(!(WPAD_ButtonsHeld(WPAD_CHAN_0)&WPAD_BUTTON_RIGHT || PAD_ButtonsHeld(0)&PAD_BUTTON_RIGHT) &&
-		   !(WPAD_ButtonsHeld(WPAD_CHAN_0)&WPAD_BUTTON_LEFT || PAD_ButtonsHeld(0)&PAD_BUTTON_LEFT))
-		{
-			dx = 0;
-			direction_x = 0;
-		}
-		
-		if(!anim_override)
-			player->MovePlayer(dx,0);
-			
-		if(i == FRAME_TICK) i = 0;
-		else i++;
-		
-		 for (IterE = enemies.begin(); IterE != enemies.end(); IterE++ )
-		{
-		   //type wasp
-		   if(((Entity*)*IterE)->IsAlive())
-		   {
-			  ((Wasp*)*IterE)->Render(shiftx);
-		   }
-		}	
-		
-		 for (Iter = bullets.begin(); Iter != bullets.end(); Iter++ )
-		{
-		   if(((Bullet*)*Iter)->Update())
-		   {
-				 for (IterE = enemies.begin(); IterE != enemies.end(); IterE++ )
-				{
-				   if(((Entity*)*IterE)->IsAlive())
-				   {
-						if(!((Entity*)*IterE)->CheckHit(((Bullet*)*Iter)))
-						{
-							((Bullet*)*Iter)->Delete();
-						}
-				   }
-				}	
-				
-		        ((Bullet*)*Iter)->Draw();
-		   }
-		   else
-		   {
-		      //BIG TODO, fix this error when erasing from the list
-			  //bullets.erase(Iter);
-		   }
-		}	
-		
-		
-		player->SetFlip(flip_animation);
-		player->StepAnimation(FRAME_TICK, i);
-		
-		if(aim_count > 0)
-		{
-		   if(direction_y != -1)
-		   {
-		      player->AimArm(0);
-		   }
-		   else if(direction_y == -1 && abs(direction_x) == 1)
-		   {
-		      player->AimArm(-45);
-		   }
-		   else if(direction_y == -1)
-		   {
-		      player->AimArm(-90);
-		   }
-		   
-		   aim_count--;
-		}
-		
-		player->Render();
-		
-		
-		for (IterP = remotePlayers.begin(); IterP != remotePlayers.end(); IterP++ )
-		{
-			  ((Player*)*IterP)->Render();
-		}	  
-		
 		
 		ground_quad.Draw();
-		block_quad.Draw();
+		
+		
+		for(unsigned int current_player = 0; current_player < players.size(); current_player++)
+		{
+			bool anim_set = false;
+			if(WPAD_ButtonsDown(current_player)&WPAD_BUTTON_HOME)
+				break;
+				
+			if(WPAD_ButtonsHeld(current_player)&WPAD_BUTTON_RIGHT || PAD_ButtonsHeld(current_player)&PAD_BUTTON_RIGHT)
+			{
+			
+				dx[current_player] += 0.1;
+				if(dx[current_player] > 1.5) dx[current_player] = 1.5;
+				direction_x[current_player] = 1;
+				direction_y[current_player] = 0;
+				anim_override[current_player] = false;
+				flip_animation[current_player] = false;
+				//levelScreen->ScrollRight(2.0);
+				players[current_player]->MovePlayer(dx[current_player],0);
+				if(players[current_player]->GetCurrentAnimation() != RUN_ANIMATION)
+					players[current_player]->SetCurrentAnimation(RUN_ANIMATION);
+				
+				anim_set = true;
+			}
+			else if(WPAD_ButtonsHeld(current_player)&WPAD_BUTTON_LEFT || PAD_ButtonsHeld(current_player)&PAD_BUTTON_LEFT)
+			{
+				dx[current_player] -= 0.1;
+				if(abs(dx[current_player]) > 1.5) dx[current_player] = -1.5;
+				direction_x[current_player] = -1;
+				direction_y[current_player] = 0;
+				anim_override[current_player] = false;
+				flip_animation[current_player] = true;
+				//levelScreen->ScrollLeft(2.0);
+				if(players[current_player]->GetCurrentAnimation() != RUN_ANIMATION)
+					players[current_player]->SetCurrentAnimation(RUN_ANIMATION);
+				players[current_player]->MovePlayer(dx[current_player],0);
+				
+				anim_set = true;
+			}
+			
+			if(WPAD_ButtonsHeld(current_player)&WPAD_BUTTON_UP || PAD_ButtonsHeld(current_player)&PAD_BUTTON_UP)
+			{
+				players[current_player]->Jump();
+			}
+			
+			if(WPAD_ButtonsDown(current_player)&WPAD_BUTTON_A || PAD_ButtonsDown(current_player)&PAD_BUTTON_A)
+			{
+				players[current_player]->SetCurrentAnimation(KICK_ANIMATION,IDLE_ANIMATION);
+				anim_set = true;
+			}
+			else if(WPAD_ButtonsDown(current_player)&WPAD_BUTTON_B || PAD_ButtonsDown(current_player)&PAD_BUTTON_B)
+			{
+				players[current_player]->SetCurrentAnimation(PUNCH_ANIMATION,IDLE_ANIMATION);
+				anim_set = true;
+			}
+			
+			if(!anim_set)
+				players[current_player]->SetCurrentAnimation(IDLE_ANIMATION);
+				
+			
+			players[current_player]->SetFlip(flip_animation[current_player]);
+			players[current_player]->StepAnimation(FRAME_TICK, i);
+			
+			players[current_player]->Render();
+		
+		}
+		
+		if(i == FRAME_TICK) i = 0;
+		else i++;
 		
 		levelScreen->DrawForeground();
 		
 		gwd.Flush();
 		world->Step(timeStep, iterations);
 		
-		//For fun, keep adding wasps every few seconds
-		if(_spawnTimer >= 150)
-		{
-			spawn_entity = true;
-			_spawnTimer = 0;
-		}
-		
-		_spawnTimer++;
-		
-		if(spawn_entity)
-		{
-			AddEntity();
-			spawn_entity = false;
-		}
 		
 	}
 	

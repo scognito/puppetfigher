@@ -144,7 +144,7 @@ void Player::Render()
 	quad.SetFillColor(color);
 	quad.Draw();
 	*/
-	this->SetPosition(300, CommonTypes::PIXELS_PER_UNIT*pos.y);
+	this->SetPosition(CommonTypes::PIXELS_PER_UNIT*pos.x, CommonTypes::PIXELS_PER_UNIT*pos.y);
 	
 	this->Draw(0, 0);
 }

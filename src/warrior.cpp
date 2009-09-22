@@ -4,10 +4,10 @@ extern u8 head_png[], torso_png[], bicep_png[], forearm_png[], hand_png[], thigh
 
 extern u8 bullet_png[]; //,gun_png[];
 
-extern char warrior_gsa[];
+extern char player_gsa[];
 
 Warrior::Warrior(float x, float y, b2World* w):
-	Player(x,y,warrior_gsa, w, 50, 30)
+	Player(x,y,player_gsa, w, 50, 30)
 {
 	InitArmor();
 	InitWeapon();
