@@ -27,6 +27,8 @@ Player::Player(float x, float y, const char* animation_file, b2World* w, float p
 	_body->CreateShape(&polydef);	
 	
 	_body->SetMassFromShapes();
+	
+	_crouchOffset = 0;
 }
 
 Player::~Player()
@@ -123,6 +125,22 @@ void Player::Jump()
 	b2Vec2 movement(0.0, 0.0);
 	movement.y = 70.0;
 	_body->ApplyImpulse( movement , _body->GetPosition());
+	
+	
+}
+
+void Player::Crouch()
+{
+	
+	if(_crouchOffset < 40)
+		_crouchOffset += 1;
+
+}
+
+void Player::UnCrouch()
+{
+	//if(_crouchOffset > 0)
+		_crouchOffset = 0;
 }
 
 void Player::Render()
@@ -144,7 +162,7 @@ void Player::Render()
 	quad.SetFillColor(color);
 	quad.Draw();
 	*/
-	this->SetPosition(CommonTypes::PIXELS_PER_UNIT*pos.x, CommonTypes::PIXELS_PER_UNIT*pos.y);
+	this->SetPosition(CommonTypes::PIXELS_PER_UNIT*pos.x, (int)(CommonTypes::PIXELS_PER_UNIT*pos.y) + _crouchOffset);
 	
 	this->Draw(0, 0);
 }

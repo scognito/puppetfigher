@@ -399,7 +399,7 @@ void Skeleton::StepAnimation(float step_size, float current_step){
 		if(step_size == current_step)
 			_animationFrame++;
 		
-	if(_animationFrame >= _Animations[_CurrentAnimation].frame_count && _SingleAnimation)
+	if(_animationFrame+1 >= _Animations[_CurrentAnimation].frame_count && _SingleAnimation)
 	{
 		_SingleAnimation = false;
 		SetCurrentAnimation(_NextAnimation);
