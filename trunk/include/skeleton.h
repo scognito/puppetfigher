@@ -24,6 +24,7 @@ class Skeleton {
 		void SetBoneRotation(int boneId, float ang);
 		
 		void SetCurrentAnimation(int anim_id);
+		void SetCurrentAnimation(int anim_id, int nextAnimation);
 		int GetCurrentAnimation(){return _CurrentAnimation;}
 		
 		void StepAnimation(float step_size, float current_step);
@@ -63,7 +64,9 @@ class Skeleton {
 		std::vector<Animation::Type> _Animations;
 		
 		int _CurrentAnimation;
-
+		int _NextAnimation;
+		bool _SingleAnimation;
+		
 		float _position_x;
 		float _position_y;
 		float _rotation;

@@ -80,7 +80,7 @@ void Bone::SetBoneNameType(char* name)
 		type = Armor::Category::THIGH;
 		side = Armor::Side::LEFT;
 	}
-	else if(strcmp(name,"rtight") == 0)
+	else if(strcmp(name,"rthigh") == 0)
 	{
 		type = Armor::Category::THIGH;
 		side = Armor::Side::RIGHT;
