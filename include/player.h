@@ -31,6 +31,9 @@ class Player : public Skeleton{
 		
 		void Render();
 		
+		void Crouch();
+		void UnCrouch();
+		
 		b2Body *GetBody(){return _body;}
 		
 	private:
@@ -43,7 +46,9 @@ class Player : public Skeleton{
 		
 		//weapon
 		Weapon::Type _weapon;
-
+		
+		int _crouchOffset;
+		
 		//Physics Stuff
 		b2Body *_body;
 		b2World *_world;

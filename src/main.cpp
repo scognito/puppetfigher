@@ -189,12 +189,18 @@ int main(int argc, char **argv){
 	players[0]->MovePlayer(-50, 0, true);
 	players.push_back(new Warrior(350,0, world));
 	players[1]->MovePlayer(100, 0, true);
+	players.push_back(new Warrior(350,0, world));
+	players[2]->MovePlayer(150, 0, true);
+	players.push_back(new Warrior(350,0, world));
+	players[3]->MovePlayer(200, 0, true);
 	
 	std::vector<float> dx;
 	std::vector<int>  direction_x;
 	std::vector<int>  direction_y;
 	std::vector<bool>  anim_override;
 	std::vector<bool>  flip_animation;
+	std::vector<bool>  sitting;
+	std::vector<bool>  moving;
 	
 	for(unsigned int np = 0; np < players.size(); np++)
 	{
@@ -203,6 +209,8 @@ int main(int argc, char **argv){
 		direction_y.push_back(0);
 		flip_animation.push_back(false);
 		anim_override.push_back(false);
+		sitting.push_back(false);
+		moving.push_back(false);
 	}
 	
     int i = 0;
@@ -234,6 +242,9 @@ int main(int argc, char **argv){
 	int RUN_ANIMATION  = 1;
 	int KICK_ANIMATION = 2;
 	int PUNCH_ANIMATION = 3;
+	int CROUCH_ANIMATION = 4;
+	int SIT_ANIMATION = 5;
+	int CRAWL_ANIMATION = 6;
 	
 	for(;;){
 	
@@ -262,9 +273,13 @@ int main(int argc, char **argv){
 				flip_animation[current_player] = false;
 				//levelScreen->ScrollRight(2.0);
 				players[current_player]->MovePlayer(dx[current_player],0);
-				if(players[current_player]->GetCurrentAnimation() != RUN_ANIMATION)
-					players[current_player]->SetCurrentAnimation(RUN_ANIMATION);
 				
+				if(!sitting[current_player])
+				{
+					if(players[current_player]->GetCurrentAnimation() != RUN_ANIMATION)
+						players[current_player]->SetCurrentAnimation(RUN_ANIMATION);
+				}
+				moving[current_player] = true;
 				anim_set = true;
 			}
 			else if(WPAD_ButtonsHeld(current_player)&WPAD_BUTTON_LEFT || PAD_ButtonsHeld(current_player)&PAD_BUTTON_LEFT)
@@ -276,8 +291,15 @@ int main(int argc, char **argv){
 				anim_override[current_player] = false;
 				flip_animation[current_player] = true;
 				//levelScreen->ScrollLeft(2.0);
-				if(players[current_player]->GetCurrentAnimation() != RUN_ANIMATION)
-					players[current_player]->SetCurrentAnimation(RUN_ANIMATION);
+				
+				if(!sitting[current_player])
+				{
+					if(players[current_player]->GetCurrentAnimation() != RUN_ANIMATION)
+						players[current_player]->SetCurrentAnimation(RUN_ANIMATION);
+				}
+				
+				moving[current_player] = true;
+				
 				players[current_player]->MovePlayer(dx[current_player],0);
 				
 				anim_set = true;
@@ -297,6 +319,52 @@ int main(int argc, char **argv){
 			{
 				players[current_player]->SetCurrentAnimation(PUNCH_ANIMATION,IDLE_ANIMATION);
 				anim_set = true;
+			}
+			
+			
+			if(WPAD_ButtonsHeld(current_player)&WPAD_BUTTON_DOWN || PAD_ButtonsHeld(current_player)&PAD_BUTTON_DOWN)
+			{
+			
+				players[current_player]->Crouch();
+				
+				if(moving[current_player])
+				{
+					if(!sitting[current_player])
+					{
+						players[current_player]->SetCurrentAnimation(CROUCH_ANIMATION, CRAWL_ANIMATION);
+					}
+					else
+					{
+						if(players[current_player]->GetCurrentAnimation() != CRAWL_ANIMATION)
+						{
+							players[current_player]->SetCurrentAnimation(CRAWL_ANIMATION);
+						}
+					}
+				}
+				else
+				{
+					if(!sitting[current_player])
+					{
+						players[current_player]->SetCurrentAnimation(CROUCH_ANIMATION, SIT_ANIMATION);
+					}
+					else
+					{
+						if(players[current_player]->GetCurrentAnimation() != SIT_ANIMATION)
+							players[current_player]->SetCurrentAnimation(SIT_ANIMATION);
+					}
+				}
+					
+					
+				sitting[current_player] = true;
+				anim_set = true;
+				
+				
+			}
+			else
+			{
+				players[current_player]->UnCrouch();
+				
+				sitting[current_player] = false;
 			}
 			
 			if(!anim_set)
