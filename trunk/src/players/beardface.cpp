@@ -1,4 +1,4 @@
-#include "Beardface.h"
+#include "beardface.h"
 
 extern u8 beardface_head_png[], beardface_torso_png[], beardface_bicep_png[], beardface_forearm_png[], beardface_hand_png[], beardface_thigh_png[], beardface_calf_png[], beardface_foot_png[];
 
