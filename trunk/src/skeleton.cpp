@@ -406,6 +406,22 @@ void Skeleton::StepAnimation(float step_size, float current_step){
 	}
 }	
 
+bool Skeleton::CollidesWith(Sprite* colSprite, Armor::Category::Type boneType)
+{
+	for(int i = 0; i < (int)_BoneVector.size(); i++)
+	{
+		if(_BoneVector[i]->GetType() == boneType)
+		{
+			if(colSprite->CollidesWith(_BoneVector[i]->GetSprite(), true))
+			{
+				return true;
+			}
+		}
+	}
+	
+	return false;
+}
+
 //Text debug print
 
 void Skeleton::Print(){

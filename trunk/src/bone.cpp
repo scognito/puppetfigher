@@ -164,9 +164,16 @@ void Bone::Kinematics(float x, float y, float rotation, bool flip) {
 
 void Bone::Draw(float x_offset, float y_offset){
 
+	bool t_flip = _flip;
+	
+	if(Armor::Category::HAND == type &&
+		side == Armor::Side::RIGHT)
+			t_flip = !_flip;
+		
+
 	if(_imageSet)
 	{
-		if(_flip)
+		if(t_flip)
 		{
 			_boneSprite.SetTransform(TRANS_MIRROR);
 		}

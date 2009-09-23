@@ -7,7 +7,7 @@ extern u8 bullet_png[]; //,gun_png[];
 extern char player_gsa[];
 
 Warrior::Warrior(float x, float y, b2World* w):
-	Player(x,y,player_gsa, w, 50, 30)
+	Player(x,y,player_gsa, w, 120, 30)
 {
 	InitArmor();
 	InitWeapon();
