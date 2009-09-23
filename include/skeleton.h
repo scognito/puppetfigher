@@ -43,6 +43,8 @@ class Skeleton {
 		float GetY(){return _position_y;}
 		float GetRotation(){return _rotation;}
 
+		bool CollidesWith(Sprite* colSprite, Armor::Category::Type boneType);
+
 		//Text debug
 		void Print();
 		

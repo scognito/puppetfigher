@@ -48,6 +48,7 @@ class Player : public Skeleton{
 		Weapon::Type _weapon;
 		
 		int _crouchOffset;
+		int _jumpTimer;
 		
 		//Physics Stuff
 		b2Body *_body;

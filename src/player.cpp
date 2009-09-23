@@ -27,7 +27,7 @@ Player::Player(float x, float y, const char* animation_file, b2World* w, float p
 	_body->CreateShape(&polydef);	
 	
 	_body->SetMassFromShapes();
-	
+	_jumpTimer    = 0;
 	_crouchOffset = 0;
 }
 
@@ -122,10 +122,15 @@ void Player::SetWeapon(Weapon::Type weapon)
 
 void Player::Jump()
 {
-	b2Vec2 movement(0.0, 0.0);
-	movement.y = 70.0;
-	_body->ApplyImpulse( movement , _body->GetPosition());
-	
+
+	if(_jumpTimer == 0)
+	{
+		_jumpTimer = 120;
+		
+		b2Vec2 movement(0.0, 0.0);
+		movement.y = 120.0;
+		_body->ApplyImpulse( movement , _body->GetWorldCenter());
+	}
 	
 }
 
@@ -139,12 +144,18 @@ void Player::Crouch()
 
 void Player::UnCrouch()
 {
+	
+	if(_crouchOffset > 0)
+		_crouchOffset -= 1;
 	//if(_crouchOffset > 0)
-		_crouchOffset = 0;
+	//	_crouchOffset = 0;
 }
 
 void Player::Render()
 {	
+	if(_jumpTimer > 0)
+		_jumpTimer--;
+
 	b2Vec2 pos = _body->GetWorldCenter();
 	
 	_last_y = CommonTypes::PIXELS_PER_UNIT*pos.y;
@@ -164,5 +175,5 @@ void Player::Render()
 	*/
 	this->SetPosition(CommonTypes::PIXELS_PER_UNIT*pos.x, (int)(CommonTypes::PIXELS_PER_UNIT*pos.y) + _crouchOffset);
 	
-	this->Draw(0, 0);
+	this->Draw(0, _height/3.0);
 }

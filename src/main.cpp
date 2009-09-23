@@ -28,6 +28,8 @@ extern u8 layer0_png[];
 extern u8 layer1_png[];
 extern u8 layer2_png[];
 
+extern u8 beachball_png[];
+
 std::vector<Player*> players;
 
 b2World *world = 0;
@@ -48,6 +50,7 @@ Quad block_quad;
 GXColor color = {70.0, 70.0, 70.0, 255.0};
 
 b2Body *block;
+b2Body *beachball;
 
 std::vector<Bullet*> bullets;
 std::vector<Entity*> enemies;
@@ -62,6 +65,9 @@ LevelScreen* levelScreen;
 Image* layer0_img;
 Image* layer1_img;
 Image* layer2_img;
+
+Image* beachball_img;
+Sprite beachballSprite;
 
 //-------------------------
 
@@ -82,8 +88,22 @@ void SetupWorld(void)
 	block_quad.SetRectangle(&block_rect);
 	block_quad.SetFillColor(color);
 	
+	b2CircleDef myBallDef;
+	myBallDef.radius = 32.0/CommonTypes::PIXELS_PER_UNIT;
+	myBallDef.density = CommonTypes::DEFAULT_DENSITY;
+	myBallDef.friction = CommonTypes::DEFAULT_FRICTION;
+	myBallDef.restitution = 0.4;
 	
-	//b2BodyDef bodyDef;
+	
+	b2BodyDef bodyDef;
+	bodyDef.position.Set(300.0 / CommonTypes::PIXELS_PER_UNIT, 100.0 / CommonTypes::PIXELS_PER_UNIT);
+	bodyDef.angle = 0;
+	
+	beachball = world->CreateBody(&bodyDef);
+	beachball->CreateShape(&myBallDef);	
+	
+	
+	beachball->SetMassFromShapes();
 	
 	//bodyDef.position.Set((block_rect.x + block_rect.width/2) / CommonTypes::PIXELS_PER_UNIT, (block_rect.y - block_rect.height)  / CommonTypes::PIXELS_PER_UNIT);
 		
@@ -112,7 +132,7 @@ void makeWorld(void)
 	// Visible area is 8x6 units
 	worldAABB.lowerBound.Set(-8.0f, -6.0f);
 	worldAABB.upperBound.Set(16.0f, 12.0f);
-	b2Vec2 gravity(0.0f, 10.0f);
+	b2Vec2 gravity(0.0f, 5.0f);
 	bool doSleep = false;
 	world = new b2World(worldAABB, gravity, doSleep);
 	
@@ -183,16 +203,20 @@ int main(int argc, char **argv){
 	layer2_img = new Image();
 	layer2_img->LoadImage(layer2_png, IMG_LOAD_TYPE_BUFFER);
 	
+	beachball_img = new Image();
+	beachball_img->LoadImage(beachball_png, IMG_LOAD_TYPE_BUFFER);
+	beachballSprite.SetImage(beachball_img);
+	
 	levelScreen = new LevelScreen(layer0_img, layer1_img, layer2_img);
 	
 	players.push_back(new Beardface(250, 0, world));
 	players[0]->MovePlayer(-50, 0, true);
 	players.push_back(new Warrior(350,0, world));
 	players[1]->MovePlayer(100, 0, true);
-	players.push_back(new Warrior(350,0, world));
-	players[2]->MovePlayer(150, 0, true);
-	players.push_back(new Warrior(350,0, world));
-	players[3]->MovePlayer(200, 0, true);
+	//players.push_back(new Warrior(350,0, world));
+	//players[2]->MovePlayer(150, 0, true);
+	//players.push_back(new Warrior(350,0, world));
+	//players[3]->MovePlayer(200, 0, true);
 	
 	std::vector<float> dx;
 	std::vector<int>  direction_x;
@@ -240,13 +264,14 @@ int main(int argc, char **argv){
 	
 	int IDLE_ANIMATION = 0;
 	int RUN_ANIMATION  = 1;
-	int KICK_ANIMATION = 2;
-	int PUNCH_ANIMATION = 3;
+	int KICK_ANIMATION = 3;
+	int PUNCH_ANIMATION = 2;
 	int CROUCH_ANIMATION = 4;
 	int SIT_ANIMATION = 5;
 	int CRAWL_ANIMATION = 6;
-	int CROUCH_PUNCH_ANIMATION = 7;
 	int CROUCH_KICK_ANIMATION = 8;
+	int CROUCH_PUNCH_ANIMATION  = 7;
+	int STAND_ANIMATION        = 9;
 	
 	for(;;){
 	
@@ -257,6 +282,16 @@ int main(int argc, char **argv){
 		
 		ground_quad.Draw();
 		
+		
+		//Draw my ball
+		
+		b2Vec2 pos = beachball->GetWorldCenter();
+		
+	
+		beachballSprite.SetPosition((int)(CommonTypes::PIXELS_PER_UNIT*pos.x)-32, (int)(CommonTypes::PIXELS_PER_UNIT*pos.y)+64);
+		beachballSprite.SetRotation((beachball->GetAngle()*180)/3.14159265);
+		//levelScreen->DrawForeground();
+		beachballSprite.Draw(0,0);
 		
 		for(unsigned int current_player = 0; current_player < players.size(); current_player++)
 		{
@@ -325,6 +360,16 @@ int main(int argc, char **argv){
 				{
 					players[current_player]->SetCurrentAnimation(CROUCH_KICK_ANIMATION,IDLE_ANIMATION);
 				}
+				
+				if(players[current_player]->CollidesWith(&beachballSprite, Armor::Category::FOOT))
+				{
+
+					b2Vec2 impact(0.0, 0.0);
+					impact.x = 4.0*direction_x[current_player];
+					impact.y = 8;
+					
+					beachball->ApplyImpulse( impact , beachball->GetWorldCenter());
+				}
 				anim_set = true;
 			}
 			else if(WPAD_ButtonsDown(current_player)&WPAD_BUTTON_B || PAD_ButtonsDown(current_player)&PAD_BUTTON_B)
@@ -337,7 +382,17 @@ int main(int argc, char **argv){
 				{
 					players[current_player]->SetCurrentAnimation(CROUCH_PUNCH_ANIMATION,IDLE_ANIMATION);
 				}
+				
+				if(players[current_player]->CollidesWith(&beachballSprite, Armor::Category::HAND))
+				{
+
+					b2Vec2 impact(0.0, 0.0);
+					impact.x = 2.0*direction_x[current_player];
+					impact.y = 12;
 					
+					beachball->ApplyImpulse( impact , beachball->GetWorldCenter());
+				}
+				
 				anim_set = true;
 			}
 			
@@ -382,6 +437,10 @@ int main(int argc, char **argv){
 			}
 			else
 			{
+				if(sitting[current_player])
+					players[current_player]->SetCurrentAnimation(STAND_ANIMATION, IDLE_ANIMATION);
+					
+				
 				players[current_player]->UnCrouch();
 				
 				sitting[current_player] = false;
@@ -401,7 +460,6 @@ int main(int argc, char **argv){
 		if(i == FRAME_TICK) i = 0;
 		else i++;
 		
-		levelScreen->DrawForeground();
 		
 		gwd.Flush();
 		world->Step(timeStep, iterations);
