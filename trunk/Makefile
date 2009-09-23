@@ -39,13 +39,13 @@ LDFLAGS	=	-g $(MACHDEP) -Wl,-Map,$(notdir $@).map
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:=	-lbox2d -lfat -lwiisprite -lpng -lz -lwiiuse -lbte -logc -lm
+LIBS	:=	-lbox2d -lfat -lfreesprite -lfreetype -lwiisprite -lpng -lz -lwiiuse -lbte -logc -lm
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(CURDIR)/libs/wiisprite $(CURDIR)/libs/box2d $(CURDIR)/libs/png
+LIBDIRS	:= $(CURDIR)/libs/wiisprite $(CURDIR)/libs/box2d $(CURDIR)/libs/png $(CURDIR)/libs/freetype $(CURDIR)/libs/freesprite
 
 #---------------------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add additional

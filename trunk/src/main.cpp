@@ -132,7 +132,7 @@ void makeWorld(void)
 	// Visible area is 8x6 units
 	worldAABB.lowerBound.Set(-8.0f, -6.0f);
 	worldAABB.upperBound.Set(16.0f, 12.0f);
-	b2Vec2 gravity(0.0f, 5.0f);
+	b2Vec2 gravity(0.0f, 10.0f);
 	bool doSleep = false;
 	world = new b2World(worldAABB, gravity, doSleep);
 	
@@ -238,7 +238,7 @@ int main(int argc, char **argv){
 	}
 	
     int i = 0;
-	int FRAME_TICK = 25;
+	int FRAME_TICK = 10;
 
 	int aim_count = 0;
 	
@@ -272,6 +272,7 @@ int main(int argc, char **argv){
 	int CROUCH_KICK_ANIMATION = 8;
 	int CROUCH_PUNCH_ANIMATION  = 7;
 	int STAND_ANIMATION        = 9;
+	int exit_game = 0;
 	
 	for(;;){
 	
@@ -297,7 +298,7 @@ int main(int argc, char **argv){
 		{
 			bool anim_set = false;
 			if(WPAD_ButtonsDown(current_player)&WPAD_BUTTON_HOME)
-				break;
+				exit_game = 1;
 				
 			if(WPAD_ButtonsHeld(current_player)&WPAD_BUTTON_RIGHT || PAD_ButtonsHeld(current_player)&PAD_BUTTON_RIGHT)
 			{
@@ -464,7 +465,8 @@ int main(int argc, char **argv){
 		gwd.Flush();
 		world->Step(timeStep, iterations);
 		
-		
+		if(exit_game)
+			break;
 	}
 	
 	

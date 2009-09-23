@@ -33,6 +33,7 @@ class Player : public Skeleton{
 		
 		void Crouch();
 		void UnCrouch();
+		void setDamage(int damage);
 		
 		b2Body *GetBody(){return _body;}
 		
@@ -56,6 +57,8 @@ class Player : public Skeleton{
 		float _last_y;
 		float _width;
 		float _height;
+
+		int _energy;
 };
 
 #endif //_Player_H_

@@ -16,6 +16,8 @@ Player::Player(float x, float y, const char* animation_file, b2World* w, float p
 	_width = playerWidth;
 	_height = playerHeight;
 	
+	_energy = 100;
+
 	b2PolygonDef polydef;
 	polydef.SetAsBox((float32(playerWidth/CommonTypes::PIXELS_PER_UNIT)/2.0), (float32(playerHeight/CommonTypes::PIXELS_PER_UNIT)/2.0));
 	
@@ -149,6 +151,14 @@ void Player::UnCrouch()
 		_crouchOffset -= 1;
 	//if(_crouchOffset > 0)
 	//	_crouchOffset = 0;
+}
+
+void Player::setDamage(int damage)
+{
+	_energy -= damage;
+
+	if(_energy < 0)
+		_energy = 0;
 }
 
 void Player::Render()
