@@ -160,6 +160,10 @@ void Player::Render()
 	
 	_last_y = CommonTypes::PIXELS_PER_UNIT*pos.y;
 	
+	
+	b2Vec2 v(pos.x, pos.y);
+	_body->SetXForm(v, 0);
+	
 /* DEBUG Physics	
 	GXColor color = {0.0, 255.0, 0.0, 255.0};
 
