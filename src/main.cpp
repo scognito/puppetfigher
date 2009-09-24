@@ -28,6 +28,10 @@ extern u8 layer0_png[];
 extern u8 layer1_png[];
 extern u8 layer2_png[];
 
+extern u8 level_refinery_png[];
+
+extern u8 shadow_png[];
+
 extern u8 beachball_png[];
 
 std::vector<Player*> players;
@@ -65,10 +69,12 @@ LevelScreen* levelScreen;
 Image* layer0_img;
 Image* layer1_img;
 Image* layer2_img;
+Image* shadow_img;
 
 Image* beachball_img;
-Sprite beachballSprite;
 
+Sprite beachballSprite;
+Sprite shadowSprite;
 //-------------------------
 
 void SetupWorld(void)
@@ -92,7 +98,7 @@ void SetupWorld(void)
 	myBallDef.radius = 32.0/CommonTypes::PIXELS_PER_UNIT;
 	myBallDef.density = CommonTypes::DEFAULT_DENSITY;
 	myBallDef.friction = CommonTypes::DEFAULT_FRICTION;
-	myBallDef.restitution = 0.4;
+	myBallDef.restitution = 0.7;
 	
 	
 	b2BodyDef bodyDef;
@@ -132,7 +138,7 @@ void makeWorld(void)
 	// Visible area is 8x6 units
 	worldAABB.lowerBound.Set(-8.0f, -6.0f);
 	worldAABB.upperBound.Set(16.0f, 12.0f);
-	b2Vec2 gravity(0.0f, 10.0f);
+	b2Vec2 gravity(0.0f, 8.0f);
 	bool doSleep = false;
 	world = new b2World(worldAABB, gravity, doSleep);
 	
@@ -195,7 +201,7 @@ int main(int argc, char **argv){
 	
     //Test Thing to kill	
 	layer0_img = new Image();
-	layer0_img->LoadImage(layer0_png, IMG_LOAD_TYPE_BUFFER);
+	layer0_img->LoadImage(level_refinery_png, IMG_LOAD_TYPE_BUFFER);
 	
 	layer1_img = new Image();
 	layer1_img->LoadImage(layer1_png, IMG_LOAD_TYPE_BUFFER);
@@ -203,9 +209,13 @@ int main(int argc, char **argv){
 	layer2_img = new Image();
 	layer2_img->LoadImage(layer2_png, IMG_LOAD_TYPE_BUFFER);
 	
+	shadow_img = new Image();
+	shadow_img->LoadImage(shadow_png, IMG_LOAD_TYPE_BUFFER);
+	
 	beachball_img = new Image();
 	beachball_img->LoadImage(beachball_png, IMG_LOAD_TYPE_BUFFER);
 	beachballSprite.SetImage(beachball_img);
+	shadowSprite.SetImage(shadow_img);
 	
 	levelScreen = new LevelScreen(layer0_img, layer1_img, layer2_img);
 	
@@ -281,7 +291,7 @@ int main(int argc, char **argv){
 		WPAD_ScanPads();
 		PAD_ScanPads();
 		
-		ground_quad.Draw();
+		//ground_quad.Draw();
 		
 		
 		//Draw my ball
@@ -292,7 +302,6 @@ int main(int argc, char **argv){
 		beachballSprite.SetPosition((int)(CommonTypes::PIXELS_PER_UNIT*pos.x)-32, (int)(CommonTypes::PIXELS_PER_UNIT*pos.y)+64);
 		beachballSprite.SetRotation((beachball->GetAngle()*180)/3.14159265);
 		//levelScreen->DrawForeground();
-		beachballSprite.Draw(0,0);
 		
 		for(unsigned int current_player = 0; current_player < players.size(); current_player++)
 		{
@@ -366,8 +375,8 @@ int main(int argc, char **argv){
 				{
 
 					b2Vec2 impact(0.0, 0.0);
-					impact.x = 4.0*direction_x[current_player];
-					impact.y = 8;
+					impact.x = 0.15*direction_x[current_player];
+					impact.y = 0.25;
 					
 					beachball->ApplyImpulse( impact , beachball->GetWorldCenter());
 				}
@@ -388,8 +397,8 @@ int main(int argc, char **argv){
 				{
 
 					b2Vec2 impact(0.0, 0.0);
-					impact.x = 2.0*direction_x[current_player];
-					impact.y = 12;
+					impact.x = .2*direction_x[current_player];
+					impact.y = .1;
 					
 					beachball->ApplyImpulse( impact , beachball->GetWorldCenter());
 				}
@@ -454,9 +463,17 @@ int main(int argc, char **argv){
 			players[current_player]->SetFlip(flip_animation[current_player]);
 			players[current_player]->StepAnimation(FRAME_TICK, i);
 			
-			players[current_player]->Render();
-		
+			shadowSprite.SetPosition((int)(players[current_player]->GetBody()->GetPosition().x * CommonTypes::PIXELS_PER_UNIT) - 32, 420);
+			shadowSprite.Draw();
+			
+			
 		}
+		
+		
+		for(unsigned int pn = 0; pn < players.size(); pn++)
+			players[pn]->Render();
+		
+		beachballSprite.Draw(0,0);
 		
 		if(i == FRAME_TICK) i = 0;
 		else i++;
