@@ -127,10 +127,10 @@ void Player::Jump()
 
 	if(_jumpTimer == 0)
 	{
-		_jumpTimer = 120;
+		_jumpTimer = 80;
 		
 		b2Vec2 movement(0.0, 0.0);
-		movement.y = 120.0;
+		movement.y = 2.5;
 		_body->ApplyImpulse( movement , _body->GetWorldCenter());
 	}
 	

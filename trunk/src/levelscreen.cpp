@@ -107,7 +107,7 @@ void LevelScreen::ScrollRight(float distance)
 void LevelScreen::DrawBackground()
 {
    layer0_a.Draw();
-   layer0_b.Draw();
+  // layer0_b.Draw();
    
    //layer1_a.Draw();
    //layer1_b.Draw();
