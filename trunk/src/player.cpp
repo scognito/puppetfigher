@@ -140,7 +140,7 @@ void Player::Crouch()
 {
 	
 	if(_crouchOffset < 40)
-		_crouchOffset += 1;
+		_crouchOffset += 2;
 
 }
 
@@ -148,7 +148,7 @@ void Player::UnCrouch()
 {
 	
 	if(_crouchOffset > 0)
-		_crouchOffset -= 1;
+		_crouchOffset -= 2;
 	//if(_crouchOffset > 0)
 	//	_crouchOffset = 0;
 }

@@ -40,6 +40,10 @@ b2World *world = 0;
 
 int screen_width, screen_height;
 
+//Define physics and animation frame rates
+//animation framerate
+#define FRAME_TICK 10
+//physics framerate
 const float32 timeStep          = 1.0f / 60.0f;
 const int32 iterations          = 10;
 
@@ -248,7 +252,6 @@ int main(int argc, char **argv){
 	}
 	
     int i = 0;
-	int FRAME_TICK = 10;
 
 	int aim_count = 0;
 	
@@ -464,6 +467,14 @@ int main(int argc, char **argv){
 			players[current_player]->StepAnimation(FRAME_TICK, i);
 			
 			shadowSprite.SetPosition((int)(players[current_player]->GetBody()->GetPosition().x * CommonTypes::PIXELS_PER_UNIT) - 32, 420);
+			
+			//dynamic shadow
+			int t_y = (int)(players[current_player]->GetBody()->GetPosition().y * CommonTypes::PIXELS_PER_UNIT);
+			
+			int t_offset = 300 - t_y;
+			
+			float t_zoom = 1. - (float)t_offset/300.0;
+			shadowSprite.SetZoom(t_zoom);
 			shadowSprite.Draw();
 			
 			
