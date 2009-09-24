@@ -35,6 +35,7 @@ class Player : public Skeleton{
 		void UnCrouch();
 		void setDamage(int damage);
 		
+		int getEnergy();
 		b2Body *GetBody(){return _body;}
 		
 	private:

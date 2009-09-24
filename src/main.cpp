@@ -20,6 +20,7 @@ using namespace wsp;
 #include "bullet.h"
 #include "entity.h"
 #include "wasp.h"
+#include "energyBar.h"
 
 #include "levelscreen.h"
 
@@ -68,6 +69,7 @@ int MAX_WASPS = 20;
 std::vector<Player*> remotePlayers;
 
 Image* enemy_img;
+EnergyBar ebar;
 
 LevelScreen* levelScreen;
 Image* layer0_img;
@@ -274,6 +276,7 @@ int main(int argc, char **argv){
 	//Add remote entity for test
 	AddEntity();
 	
+	//ebar = new EnergyBar();
 	
 	int IDLE_ANIMATION = 0;
 	int RUN_ANIMATION  = 1;
@@ -449,6 +452,14 @@ int main(int argc, char **argv){
 				
 			}
 			else
+			if(WPAD_ButtonsDown(current_player)&WPAD_BUTTON_1 || PAD_ButtonsDown(current_player)&PAD_BUTTON_X){
+				players[0]->setDamage(10);
+			}
+			else
+			if(WPAD_ButtonsDown(current_player)&WPAD_BUTTON_2 || PAD_ButtonsDown(current_player)&PAD_BUTTON_Y){
+				players[1]->setDamage(10);
+			}
+			else
 			{
 				if(sitting[current_player])
 					players[current_player]->SetCurrentAnimation(STAND_ANIMATION, IDLE_ANIMATION);
@@ -485,7 +496,10 @@ int main(int argc, char **argv){
 			players[pn]->Render();
 		
 		beachballSprite.Draw(0,0);
-		
+
+		ebar.UpdateValues(players[0]->getEnergy() , players[1]->getEnergy());
+		ebar.Draw();
+
 		if(i == FRAME_TICK) i = 0;
 		else i++;
 		

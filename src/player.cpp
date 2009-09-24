@@ -161,6 +161,10 @@ void Player::setDamage(int damage)
 		_energy = 0;
 }
 
+int Player::getEnergy(){
+	return _energy;
+}
+
 void Player::Render()
 {	
 	if(_jumpTimer > 0)
