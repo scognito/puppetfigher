@@ -25,7 +25,7 @@ Player::Player(float x, float y, const char* animation_file, b2World* w, float p
 		
 	polydef.friction = CommonTypes::DEFAULT_FRICTION;
 	polydef.restitution = CommonTypes::DEFAULT_RESTITUTION;
-	
+
 	_body->CreateShape(&polydef);	
 	
 	_body->SetMassFromShapes();
@@ -249,6 +249,13 @@ void Player::Render()
 	
 	_last_y = CommonTypes::PIXELS_PER_UNIT*pos.y;
 	
+	//Limit Maximum Velocity (Slow down flying around screen during jump...)
+	float32 maxSpeed = 50;
+	
+	const b2Vec2 velocity = _body->GetLinearVelocity();
+	const float32 speed = velocity.Length();
+	if (speed > maxSpeed)
+		_body->SetLinearVelocity((maxSpeed / speed) * velocity);
 	
 	b2Vec2 v(pos.x, pos.y);
 	_body->SetXForm(v, 0);
