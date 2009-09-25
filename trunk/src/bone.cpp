@@ -38,12 +38,12 @@ void Bone::SetBoneNameType(char* name)
 	if(strcmp(name,"head") == 0)
 	{
 		type = Armor::Category::HEAD;
-		side = Armor::Side::RIGHT;
+		side = Armor::Side::NONE;
 	}
 	else if(strcmp(name,"torso") == 0)
 	{
 		type = Armor::Category::TORSO;
-		side = Armor::Side::RIGHT;
+		side = Armor::Side::NONE;
 	}
 	else if(strcmp(name,"lbicep") == 0)
 	{

@@ -25,6 +25,8 @@ class Player : public Skeleton{
 		
 		Bullet* FireWeapon(b2Vec2 direction);
 		
+		int CheckPlayerCollision(Player* p, Armor::Category::Type bodyPart, Armor::Side::Type side);
+		
 		void AimArm(float angle);
 		
 		void Jump();
@@ -33,7 +35,7 @@ class Player : public Skeleton{
 		
 		void Crouch();
 		void UnCrouch();
-		void setDamage(int damage);
+		void setDamage(float damage);
 		
 		int getEnergy();
 		b2Body *GetBody(){return _body;}
@@ -59,7 +61,7 @@ class Player : public Skeleton{
 		float _width;
 		float _height;
 
-		int _energy;
+		float _energy;
 };
 
 #endif //_Player_H_

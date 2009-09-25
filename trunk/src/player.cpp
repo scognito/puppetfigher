@@ -63,6 +63,81 @@ void Player::MovePlayer(float dx, float dy, bool skipSetAnimation)
 	_body->SetXForm(v, 0);
 }
 
+int Player::CheckPlayerCollision(Player* p, Armor::Category::Type bodyPart, Armor::Side::Type side)
+{
+
+	Sprite* bodyPartSprite = this->GetBoneSprite(bodyPart,side);
+
+	//return different damage based on hit location
+
+	if(p == NULL)
+		return 0;
+
+	if(bodyPartSprite != NULL)
+	{
+		if( p->CollidesWith(bodyPartSprite, Armor::Category::TORSO, Armor::Side::NONE))
+		{	
+			return 1;
+		}
+		else if( p->CollidesWith(bodyPartSprite, Armor::Category::HEAD, Armor::Side::NONE))
+		{
+			return 1;
+		}
+		else if( p->CollidesWith(bodyPartSprite, Armor::Category::BICEP, Armor::Side::LEFT))
+		{
+			return 1;
+		}
+		else if( p->CollidesWith(bodyPartSprite, Armor::Category::BICEP, Armor::Side::RIGHT))
+		{
+			return 1;
+		}
+		else if( p->CollidesWith(bodyPartSprite, Armor::Category::FOREARM, Armor::Side::LEFT))
+		{
+			return 1;
+		}
+		else if( p->CollidesWith(bodyPartSprite, Armor::Category::FOREARM, Armor::Side::RIGHT))
+		{
+			return 1;
+		}
+		else if( p->CollidesWith(bodyPartSprite, Armor::Category::HAND, Armor::Side::LEFT))
+		{
+			return 1;
+		}
+		else if( p->CollidesWith(bodyPartSprite, Armor::Category::HAND, Armor::Side::RIGHT))
+		{
+			return 1;
+		}
+		else if( p->CollidesWith(bodyPartSprite, Armor::Category::THIGH, Armor::Side::LEFT))
+		{
+			return 1;
+		}
+		else if( p->CollidesWith(bodyPartSprite, Armor::Category::THIGH, Armor::Side::RIGHT))
+		{
+			return 1;
+		}
+		else if( p->CollidesWith(bodyPartSprite, Armor::Category::CALF, Armor::Side::LEFT))
+		{
+			return 1;
+		}
+		else if( p->CollidesWith(bodyPartSprite, Armor::Category::CALF, Armor::Side::RIGHT))
+		{
+			return 1;
+		}
+		else if( p->CollidesWith(bodyPartSprite, Armor::Category::FOOT, Armor::Side::LEFT))
+		{
+			return 1;
+		}
+		else if( p->CollidesWith(bodyPartSprite, Armor::Category::FOOT, Armor::Side::RIGHT))
+		{
+			return 1;
+		}
+	}
+	else
+	{
+		return -100;
+	}
+}
+		
 void Player::SetArmor(Armor::Type armor)
 {
 	_armor[armor.armor_type] = armor;
@@ -153,7 +228,7 @@ void Player::UnCrouch()
 	//	_crouchOffset = 0;
 }
 
-void Player::setDamage(int damage)
+void Player::setDamage(float damage)
 {
 	_energy -= damage;
 
