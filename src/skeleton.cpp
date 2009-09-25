@@ -42,6 +42,9 @@ Skeleton::Skeleton(float x, float y, const char* skelFilePath)
 	_flip = false;
 	
 	_SingleAnimation = false;
+	
+	_attackBone = Armor::Category::HEAD;
+	_isAttacking = false;
 }
 
 Skeleton::~Skeleton()
@@ -403,14 +406,32 @@ void Skeleton::StepAnimation(float step_size, float current_step){
 	{
 		_SingleAnimation = false;
 		SetCurrentAnimation(_NextAnimation);
+		
+		//Kill attacking just incase this was an attack animation
+		_attackBone = Armor::Category::HEAD;
+		_isAttacking = false;
 	}
 }	
 
-bool Skeleton::CollidesWith(Sprite* colSprite, Armor::Category::Type boneType)
+Sprite* Skeleton::GetBoneSprite(Armor::Category::Type boneType, Armor::Side::Type sideType)
+{	
+	for(int i = 0; i < (int)_BoneVector.size(); i++)
+	{
+		if(_BoneVector[i]->GetType() == boneType && _BoneVector[i]->GetSide() == sideType)
+		{
+			return _BoneVector[i]->GetSprite();
+		}
+	}
+
+
+	return NULL;
+}
+		
+bool Skeleton::CollidesWith(Sprite* colSprite, Armor::Category::Type boneType, Armor::Side::Type sideType)
 {
 	for(int i = 0; i < (int)_BoneVector.size(); i++)
 	{
-		if(_BoneVector[i]->GetType() == boneType)
+		if(_BoneVector[i]->GetType() == boneType  && _BoneVector[i]->GetSide() == sideType)
 		{
 			if(colSprite->CollidesWith(_BoneVector[i]->GetSprite(), true))
 			{
@@ -420,6 +441,12 @@ bool Skeleton::CollidesWith(Sprite* colSprite, Armor::Category::Type boneType)
 	}
 	
 	return false;
+}
+
+void Skeleton::SetAttacking(Armor::Category::Type attackBone)
+{
+	_attackBone = attackBone;
+	_isAttacking = true;
 }
 
 //Text debug print

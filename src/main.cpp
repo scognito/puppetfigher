@@ -377,15 +377,8 @@ int main(int argc, char **argv){
 					players[current_player]->SetCurrentAnimation(CROUCH_KICK_ANIMATION,IDLE_ANIMATION);
 				}
 				
-				if(players[current_player]->CollidesWith(&beachballSprite, Armor::Category::FOOT))
-				{
-
-					b2Vec2 impact(0.0, 0.0);
-					impact.x = 0.15*direction_x[current_player];
-					impact.y = 0.25;
-					
-					beachball->ApplyImpulse( impact , beachball->GetWorldCenter());
-				}
+				players[current_player]->SetAttacking(Armor::Category::FOOT);
+				
 				anim_set = true;
 			}
 			else if(WPAD_ButtonsDown(current_player)&WPAD_BUTTON_B || PAD_ButtonsDown(current_player)&PAD_BUTTON_B)
@@ -398,16 +391,9 @@ int main(int argc, char **argv){
 				{
 					players[current_player]->SetCurrentAnimation(CROUCH_PUNCH_ANIMATION,IDLE_ANIMATION);
 				}
-				
-				if(players[current_player]->CollidesWith(&beachballSprite, Armor::Category::HAND))
-				{
 
-					b2Vec2 impact(0.0, 0.0);
-					impact.x = .2*direction_x[current_player];
-					impact.y = .1;
-					
-					beachball->ApplyImpulse( impact , beachball->GetWorldCenter());
-				}
+				
+				players[current_player]->SetAttacking(Armor::Category::HAND);
 				
 				anim_set = true;
 			}
@@ -488,7 +474,37 @@ int main(int argc, char **argv){
 			shadowSprite.SetZoom(t_zoom);
 			shadowSprite.Draw();
 			
-			
+			/* Handle damage for kicks/punches*/
+			if(	players[current_player]->IsAttacking())
+			{
+				if(players[current_player]->CollidesWith(&beachballSprite, players[current_player]->GetAttackBone(), Armor::Side::RIGHT) ||
+				   players[current_player]->CollidesWith(&beachballSprite, players[current_player]->GetAttackBone(), Armor::Side::LEFT))
+				{
+
+					b2Vec2 impact(0.0, 0.0);
+					impact.x = .02*direction_x[current_player];
+					impact.y = .15;
+					
+					beachball->ApplyImpulse( impact , beachball->GetWorldCenter());
+				}
+				
+				for(unsigned int pnum = 0; pnum < players.size(); pnum++)
+				{
+					if(pnum != current_player)
+					{
+						int damage = 0;
+						
+						if((damage=players[current_player]->CheckPlayerCollision(players[pnum], players[current_player]->GetAttackBone(), Armor::Side::RIGHT)) >= 0)
+						{
+							players[pnum]->setDamage(damage);
+						}
+						else if((damage=players[current_player]->CheckPlayerCollision(players[pnum], players[current_player]->GetAttackBone(), Armor::Side::LEFT)) >= 0)
+						{
+							players[pnum]->setDamage(damage);
+						}
+					}
+				}
+			}
 		}
 		
 		

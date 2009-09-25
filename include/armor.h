@@ -23,7 +23,8 @@ namespace Armor {
 	namespace Side {
 		enum Type {
 			RIGHT,
-			LEFT
+			LEFT,
+			NONE
 		};
 	}
 	
