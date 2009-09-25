@@ -508,6 +508,12 @@ int main(int argc, char **argv){
 		}
 		
 		
+		/*Draw ball shadow*/
+	
+		shadowSprite.SetZoom(.9);
+		shadowSprite.SetPosition(beachballSprite.GetX(), 420);
+		shadowSprite.Draw();
+		
 		for(unsigned int pn = 0; pn < players.size(); pn++)
 			players[pn]->Render();
 		
