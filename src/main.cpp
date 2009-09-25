@@ -15,12 +15,16 @@ using namespace wsp;
 
 #define MAX_WIISPRITE_LAYERS 100
 
+#define SPEED_STEP 0.5f
+#define SPEED_MAX  3.5f
+
 #include "beardface.h"
 #include "warrior.h"
 #include "bullet.h"
 #include "entity.h"
 #include "wasp.h"
 #include "energyBar.h"
+#include "input.h"
 
 #include "levelscreen.h"
 
@@ -43,9 +47,9 @@ int screen_width, screen_height;
 
 //Define physics and animation frame rates
 //animation framerate
-#define FRAME_TICK 10
+#define FRAME_TICK 5 //10
 //physics framerate
-const float32 timeStep          = 1.0f / 60.0f;
+const float32 timeStep          = 1.0f / 30.0f; //60.0f
 const int32 iterations          = 10;
 
 //------------------------
@@ -70,6 +74,7 @@ std::vector<Player*> remotePlayers;
 
 Image* enemy_img;
 EnergyBar ebar;
+Input input;
 
 LevelScreen* levelScreen;
 Image* layer0_img;
@@ -294,9 +299,11 @@ int main(int argc, char **argv){
 	
 	    levelScreen->DrawBackground();
 	
+	    input.scanPads();
+	    /*
 		WPAD_ScanPads();
 		PAD_ScanPads();
-		
+		*/
 		//ground_quad.Draw();
 		
 		
@@ -315,11 +322,12 @@ int main(int argc, char **argv){
 			if(WPAD_ButtonsDown(current_player)&WPAD_BUTTON_HOME)
 				exit_game = 1;
 				
-			if(WPAD_ButtonsHeld(current_player)&WPAD_BUTTON_RIGHT || PAD_ButtonsHeld(current_player)&PAD_BUTTON_RIGHT)
+			//if(WPAD_ButtonsHeld(current_player)&WPAD_BUTTON_RIGHT || PAD_ButtonsHeld(current_player)&PAD_BUTTON_RIGHT)
+			if(input.doButton(current_player, BUTTON_RIGHT, ACTION_HELD))
 			{
 			
-				dx[current_player] += 0.1;
-				if(dx[current_player] > 1.5) dx[current_player] = 1.5;
+				dx[current_player] += SPEED_STEP; //0.1
+				if(dx[current_player] > SPEED_MAX) dx[current_player] = SPEED_MAX; //1.5
 				direction_x[current_player] = 1;
 				direction_y[current_player] = 0;
 				anim_override[current_player] = false;
@@ -335,10 +343,11 @@ int main(int argc, char **argv){
 				moving[current_player] = true;
 				anim_set = true;
 			}
-			else if(WPAD_ButtonsHeld(current_player)&WPAD_BUTTON_LEFT || PAD_ButtonsHeld(current_player)&PAD_BUTTON_LEFT)
+			else if(input.doButton(current_player, BUTTON_LEFT, ACTION_HELD))
+			//else if(WPAD_ButtonsHeld(current_player)&WPAD_BUTTON_LEFT || PAD_ButtonsHeld(current_player)&PAD_BUTTON_LEFT)
 			{
-				dx[current_player] -= 0.1;
-				if(abs(dx[current_player]) > 1.5) dx[current_player] = -1.5;
+				dx[current_player] -= SPEED_STEP;
+				if(abs(dx[current_player]) > SPEED_MAX) dx[current_player] = -SPEED_MAX;
 				direction_x[current_player] = -1;
 				direction_y[current_player] = 0;
 				anim_override[current_player] = false;
@@ -361,13 +370,18 @@ int main(int argc, char **argv){
 			{
 				moving[current_player] = false;
 			}
-			if(WPAD_ButtonsHeld(current_player)&WPAD_BUTTON_UP || PAD_ButtonsHeld(current_player)&PAD_BUTTON_UP)
+			if(input.doButton(current_player, BUTTON_UP, ACTION_HELD))
+			//if(WPAD_ButtonsHeld(current_player)&WPAD_BUTTON_UP || PAD_ButtonsHeld(current_player)&PAD_BUTTON_UP)
 			{
 				players[current_player]->Jump();
 			}
 			
-			if(WPAD_ButtonsDown(current_player)&WPAD_BUTTON_A || PAD_ButtonsDown(current_player)&PAD_BUTTON_A)
+			if(input.doButton(current_player, BUTTON_KICK, ACTION_HELD))
+			//if(WPAD_ButtonsDown(current_player)&WPAD_BUTTON_A || PAD_ButtonsDown(current_player)&PAD_BUTTON_A)
 			{
+				moving[current_player] = false;
+				dx[current_player] = 0;
+
 				if(!sitting[current_player])
 				{
 					players[current_player]->SetCurrentAnimation(KICK_ANIMATION, SIT_ANIMATION);
@@ -381,8 +395,12 @@ int main(int argc, char **argv){
 				
 				anim_set = true;
 			}
-			else if(WPAD_ButtonsDown(current_player)&WPAD_BUTTON_B || PAD_ButtonsDown(current_player)&PAD_BUTTON_B)
+			if(input.doButton(current_player, BUTTON_PUNCH, ACTION_HELD))
+			//else if(WPAD_ButtonsDown(current_player)&WPAD_BUTTON_B || PAD_ButtonsDown(current_player)&PAD_BUTTON_B)
 			{
+				moving[current_player] = false;
+				dx[current_player] = 0;
+
 				if(!sitting[current_player])
 				{
 					players[current_player]->SetCurrentAnimation(PUNCH_ANIMATION, SIT_ANIMATION);
@@ -392,14 +410,13 @@ int main(int argc, char **argv){
 					players[current_player]->SetCurrentAnimation(CROUCH_PUNCH_ANIMATION,IDLE_ANIMATION);
 				}
 
-				
 				players[current_player]->SetAttacking(Armor::Category::HAND);
 				
 				anim_set = true;
 			}
 			
-			
-			if(WPAD_ButtonsHeld(current_player)&WPAD_BUTTON_DOWN || PAD_ButtonsHeld(current_player)&PAD_BUTTON_DOWN)
+			if(input.doButton(current_player, BUTTON_DOWN, ACTION_HELD))
+			//if(WPAD_ButtonsHeld(current_player)&WPAD_BUTTON_DOWN || PAD_ButtonsHeld(current_player)&PAD_BUTTON_DOWN)
 			{
 			
 				players[current_player]->Crouch();
@@ -438,11 +455,15 @@ int main(int argc, char **argv){
 				
 			}
 			else
-			if(WPAD_ButtonsDown(current_player)&WPAD_BUTTON_1 || PAD_ButtonsDown(current_player)&PAD_BUTTON_X){
+			if(input.doButton(current_player, BUTTON_OPTION_1, ACTION_HELD))
+			{
+			//if(WPAD_ButtonsDown(current_player)&WPAD_BUTTON_1 || PAD_ButtonsDown(current_player)&PAD_BUTTON_X){
 				players[0]->setDamage(10);
 			}
 			else
-			if(WPAD_ButtonsDown(current_player)&WPAD_BUTTON_2 || PAD_ButtonsDown(current_player)&PAD_BUTTON_Y){
+			if(input.doButton(current_player, BUTTON_OPTION_2, ACTION_HELD))
+			{
+			//if(WPAD_ButtonsDown(current_player)&WPAD_BUTTON_2 || PAD_ButtonsDown(current_player)&PAD_BUTTON_Y){
 				players[1]->setDamage(10);
 			}
 			else
